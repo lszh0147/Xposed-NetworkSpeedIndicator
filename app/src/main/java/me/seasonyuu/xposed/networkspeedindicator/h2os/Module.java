@@ -56,7 +56,6 @@ public final class Module implements IXposedHookLoadPackage, IXposedHookInitPack
 
 	@Override
 	public final void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-		Log.d(TAG, "handleLoadPackage: " + lpparam.packageName);
 		if (!PKG_NAME_SYSTEM_UI.equals(lpparam.packageName)) {
 			return;
 		}

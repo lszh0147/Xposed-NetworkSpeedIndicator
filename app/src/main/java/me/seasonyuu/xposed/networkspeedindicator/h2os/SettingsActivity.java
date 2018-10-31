@@ -26,26 +26,29 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
 
 import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.preference.PreferenceUtils;
 
 import com.h6ah4i.android.compat.preference.MultiSelectListPreferenceCompat;
 
-public final class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
 	private static final String TAG = SettingsActivity.class.getSimpleName();
 	private SharedPreferences mPrefs;
-	private final Set<String> networkTypeEntries = new LinkedHashSet<String>();
-	private final Set<String> networkTypeValues = new LinkedHashSet<String>();
+	private final Set<String> networkTypeEntries = new LinkedHashSet<>();
+	private final Set<String> networkTypeValues = new LinkedHashSet<>();
 	private int prefUnitMode;
 	private int prefForceUnit;
+	private PreferenceUtils mPreferenceUtils;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 
-			getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+			getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
 			mPrefs = getPreferenceManager().getSharedPreferences();
+
+			mPreferenceUtils = PreferenceUtils.get();
 
 			addPreferencesFromResource(R.xml.settings);
 
@@ -125,7 +128,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		}
 	}
 
-	private final void setSummary(final Preference preference) {
+	private void setSummary(final Preference preference) {
 		if (preference instanceof ListPreference) {
 			ListPreference listPref = (ListPreference) preference;
 			preference.setSummary(createListPrefSummary(listPref));
@@ -141,7 +144,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		}
 	}
 
-	private final String createListPrefSummary(final ListPreference listPref) {
+	private String createListPrefSummary(final ListPreference listPref) {
 		String summaryText = listPref.getEntry().toString();
 
 		if (Common.KEY_UNIT_MODE.equals(listPref.getKey())) {
@@ -158,7 +161,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		return summaryText;
 	}
 
-	private final String createEditTextSummary(final EditTextPreference editPref) {
+	private String createEditTextSummary(final EditTextPreference editPref) {
 		String summaryText = editPref.getText();
 
 		if (Common.KEY_UPDATE_INTERVAL.equals(editPref.getKey())) {
@@ -199,7 +202,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		return summaryText;
 	}
 
-	private static final String formatWithUnit(final String value, final String unit) {
+	private static String formatWithUnit(final String value, final String unit) {
 		if (unit.contains("%s")) {
 			return String.format(unit, value);
 		} else {
@@ -207,7 +210,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		}
 	}
 
-	private final String createMultiSelectSummary(final MultiSelectListPreferenceCompat mulPref) {
+	private String createMultiSelectSummary(final MultiSelectListPreferenceCompat mulPref) {
 		Set<String> valueSet = mulPref.getValues();
 
 		if (Common.KEY_UNIT_FORMAT.equals(mulPref.getKey())) {
@@ -224,7 +227,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 			return getString(R.string.summary_none);
 		}
 
-		TreeMap<Integer, String> selections = new TreeMap<Integer, String>();
+		TreeMap<Integer, String> selections = new TreeMap<>();
 		for (String value : valueSet) {
 			int index = mulPref.findIndexOfValue(value);
 			if (index < 0 || index >= mulPref.getEntries().length) {
@@ -235,14 +238,14 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 			}
 		}
 
-		String summary = "";
+		StringBuilder summary = new StringBuilder();
 		for (String entry : selections.values()) {
 			if (summary.length() > 0) {
-				summary += ", ";
+				summary.append(", ");
 			}
-			summary += entry;
+			summary.append(entry);
 		}
-		return summary;
+		return summary.toString();
 	}
 
 	private String createColorPickerSummary(final ColorPickerPreference colorPicker) {
@@ -274,58 +277,123 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 
 			intent.setAction(Common.ACTION_SETTINGS_CHANGED);
 
-			if (key.equals(Common.KEY_FORCE_UNIT)) {
-				int value = Common.getPrefInt(prefs, key, Common.DEF_FORCE_UNIT);
-				findPreference(Common.KEY_MIN_UNIT).setEnabled(value == 0);
-				intent.putExtra(key, value);
-			} else if (key.equals(Common.KEY_UNIT_MODE)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_UNIT_MODE));
-			} else if (key.equals(Common.KEY_HIDE_BELOW)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_HIDE_BELOW));
-			} else if (key.equals(Common.KEY_SHOW_SUFFIX)) {
-				intent.putExtra(key, prefs.getBoolean(key, Common.DEF_SHOW_SUFFIX));
-			} else if (key.equals(Common.KEY_FONT_SIZE)) {
-				intent.putExtra(key, Common.getPrefFloat(prefs, key, Common.DEF_FONT_SIZE));
-			} else if (key.equals(Common.KEY_POSITION)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_POSITION));
-			} else if (key.equals(Common.KEY_SUFFIX)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_SUFFIX));
-			} else if (key.equals(Common.KEY_DISPLAY)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_DISPLAY));
-			} else if (key.equals(Common.KEY_SWAP_SPEEDS)) {
-				intent.putExtra(key, prefs.getBoolean(key, Common.DEF_SWAP_SPEEDS));
-			} else if (key.equals(Common.KEY_UPDATE_INTERVAL)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_UPDATE_INTERVAL));
-			} else if (key.equals(Common.KEY_FONT_COLOR)) {
-				intent.putExtra(key, prefs.getBoolean(key, Common.DEF_FONT_COLOR));
-			} else if (key.equals(Common.KEY_COLOR)) {
-				intent.putExtra(key, prefs.getInt(key, Common.DEF_COLOR));
-			} else if (key.equals(Common.KEY_ENABLE_LOG)) {
-				intent.putExtra(key, prefs.getBoolean(key, Common.DEF_ENABLE_LOG));
-			} else if (key.equals(Common.KEY_NETWORK_TYPE)
-					|| key.equals(Common.KEY_NETWORK_SPEED)
-					|| key.equals(Common.KEY_UNIT_FORMAT)
-					|| key.equals(Common.KEY_FONT_STYLE)) {
-				MultiSelectListPreferenceCompat mulPref = (MultiSelectListPreferenceCompat) findPreference(key);
-				HashSet<String> value = (HashSet<String>) mulPref.getValues();
-				intent.putExtra(key, value);
-			} else if (key.equals(Common.KEY_GET_SPEED_WAY)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_SPEED_WAY));
-			} else if (key.equals(Common.KEY_MIN_UNIT)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_FORCE_UNIT));
-			} else if (key.equals(Common.KEY_HIDE_LAUNCHER_ICON)) {
-				ComponentName componentName = new ComponentName(this,
-						"me.seasonyuu.xposed.networkspeedindicator.h2os.SettingsActivity.Alias");
-				int state = prefs.getBoolean(key, Common.DEF_HIDE_LAUNCHER_ICON) ?
-						PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
-						PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
-				getPackageManager().setComponentEnabledSetting(componentName,
-						state, PackageManager.DONT_KILL_APP);
-				return;
-			} else if (key.equals(Common.KEY_MIN_WIDTH)) {
-				intent.putExtra(key, Common.getPrefInt(prefs, key, Common.DEF_MIN_WIDTH));
-			} else {
-				intent.setAction(null);
+			switch (key) {
+				case Common.KEY_FORCE_UNIT: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_FORCE_UNIT);
+					findPreference(Common.KEY_MIN_UNIT).setEnabled(value == 0);
+					mPreferenceUtils.putBoolean(this, key, value == 0);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_UNIT_MODE: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_UNIT_MODE);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_HIDE_BELOW: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_HIDE_BELOW);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_SHOW_SUFFIX: {
+					boolean value = prefs.getBoolean(key, Common.DEF_SHOW_SUFFIX);
+					mPreferenceUtils.putBoolean(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_FONT_SIZE:
+					intent.putExtra(key, Common.getPrefFloat(prefs, key, Common.DEF_FONT_SIZE));
+					break;
+				case Common.KEY_POSITION: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_POSITION);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_SUFFIX: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_SUFFIX);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_DISPLAY: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_DISPLAY);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_SWAP_SPEEDS: {
+					boolean value = prefs.getBoolean(key, Common.DEF_SWAP_SPEEDS);
+					mPreferenceUtils.putBoolean(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_UPDATE_INTERVAL: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_UPDATE_INTERVAL);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_FONT_COLOR: {
+					boolean value = prefs.getBoolean(key, Common.DEF_FONT_COLOR);
+					mPreferenceUtils.putBoolean(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_COLOR: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_COLOR);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_ENABLE_LOG: {
+					boolean value = prefs.getBoolean(key, Common.DEF_ENABLE_LOG);
+					mPreferenceUtils.putBoolean(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_NETWORK_TYPE:
+				case Common.KEY_NETWORK_SPEED:
+				case Common.KEY_UNIT_FORMAT:
+				case Common.KEY_FONT_STYLE: {
+					MultiSelectListPreferenceCompat mulPref = (MultiSelectListPreferenceCompat) findPreference(key);
+					HashSet<String> value = (HashSet<String>) mulPref.getValues();
+					mPreferenceUtils.putStringSet(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_GET_SPEED_WAY: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_SPEED_WAY);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_MIN_UNIT: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_FORCE_UNIT);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				case Common.KEY_HIDE_LAUNCHER_ICON:
+					ComponentName componentName = new ComponentName(this,
+							"me.seasonyuu.xposed.networkspeedindicator.h2os.SettingsActivity.Alias");
+					int state = prefs.getBoolean(key, Common.DEF_HIDE_LAUNCHER_ICON) ?
+							PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
+							PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+					getPackageManager().setComponentEnabledSetting(componentName,
+							state, PackageManager.DONT_KILL_APP);
+					return;
+				case Common.KEY_MIN_WIDTH: {
+					int value = Common.getPrefInt(prefs, key, Common.DEF_MIN_WIDTH);
+					mPreferenceUtils.putInt(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
+				default:
+					intent.setAction(null);
+					break;
 			}
 
 			if (intent.getAction() != null) {
@@ -337,7 +405,6 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private final void refreshPreferences(final SharedPreferences prefs, final String key) {
 		// When key is null, refresh everything.
 		// When a key is provided, refresh only for that key.

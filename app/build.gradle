@@ -19,12 +19,12 @@ if (gitTag.isEmpty()) {
 android {
 	signingConfigs {
 	}
-	compileSdkVersion 21
-	buildToolsVersion "26.0.1"
+	compileSdkVersion 28
+	buildToolsVersion "28.0.3"
 	defaultConfig {
 		applicationId 'me.seasonyuu.xposed.networkspeedindicator.h2os'
 		minSdkVersion 21
-		targetSdkVersion 21
+		targetSdkVersion 28
 		versionCode Integer.parseInt(gitCommits)
 		versionName version
 		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

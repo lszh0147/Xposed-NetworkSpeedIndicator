@@ -46,7 +46,7 @@ public class PreferenceProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
         SQLiteDatabase db = database.getWritableDatabase();
-        db.insert(TABLE_NAME, null, contentValues);
+        db.insertWithOnConflict(TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
         return uri;
     }

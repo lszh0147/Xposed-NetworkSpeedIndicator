@@ -24,7 +24,9 @@ import java.util.Set;
 import de.robv.android.xposed.XSharedPreferences;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.Common;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.TrafficStats;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.Utils;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.preference.PreferenceUtils;
 
 @SuppressLint("HandlerLeak")
 public final class TrafficView extends TextView {
@@ -49,6 +51,7 @@ public final class TrafficView extends TextView {
 	private boolean loggedZero = false;
 	private String networkType;
 	private boolean networkState;
+	private boolean bootCompleted = false;
 
 	private int iconTint = DEFAULT_ICON_TINT;
 
@@ -120,6 +123,11 @@ public final class TrafficView extends TextView {
 					Log.i(TAG, "Connectivity changed");
 					updateConnectionInfo();
 					updateViewVisibility();
+				} else if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+					bootCompleted = true;
+					loadPreferences();
+					updateViewVisibility();
+					update();
 				} else if (action.equals(Common.ACTION_SETTINGS_CHANGED)) {
 					Log.i(TAG, "Settings changed");
 					Log.d(TAG, intent.getExtras().keySet().toArray());
@@ -216,7 +224,7 @@ public final class TrafficView extends TextView {
 					downloadSpeed = ((totalRxBytesNew - totalRxBytes) * 1000) / elapsedTime;
 				}
 
-				if (loggedZero == false || uploadSpeed != 0 || downloadSpeed != 0) {
+				if (!loggedZero || uploadSpeed != 0 || downloadSpeed != 0) {
 //					Log.d(TAG, totalTxBytes, ",", totalTxBytesNew, ";", totalRxBytes, ",", totalRxBytesNew, ";",
 //							lastUpdateTime, ",", lastUpdateTimeNew, ";", uploadSpeed, ",", downloadSpeed);
 					loggedZero = (uploadSpeed == 0 && downloadSpeed == 0);
@@ -256,9 +264,11 @@ public final class TrafficView extends TextView {
 
 			if (!mAttached) {
 				mAttached = true;
+
 				IntentFilter filter = new IntentFilter();
 				filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 				filter.addAction(Common.ACTION_SETTINGS_CHANGED);
+				filter.addAction(Intent.ACTION_BOOT_COMPLETED);
 				getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
 			}
 			updateViewVisibility();
@@ -515,7 +525,7 @@ public final class TrafficView extends TextView {
 	};
 
 	private final void updateViewVisibility() {
-		if (networkState && prefNetworkType.contains(networkType)) {
+		if (bootCompleted && networkState && prefNetworkType.contains(networkType)) {
 			if (mAttached) {
 				updateTraffic();
 			}
@@ -528,32 +538,31 @@ public final class TrafficView extends TextView {
 
 	private final void loadPreferences() {
 		try {
-			XSharedPreferences mPref = new XSharedPreferences(Common.PKG_NAME);
+			PreferenceUtils preferenceUtils = PreferenceUtils.get();
 
 			// fetch all preferences first
-			int localPrefForceUnit = Common.getPrefInt(mPref, Common.KEY_FORCE_UNIT, Common.DEF_FORCE_UNIT);
-			int localPrefMinUnit = Common.getPrefInt(mPref, Common.KEY_MIN_UNIT, Common.DEF_MIN_UNIT);
-			int localPrefUnitMode = Common.getPrefInt(mPref, Common.KEY_UNIT_MODE, Common.DEF_UNIT_MODE);
-			Set<String> localPrefUnitFormat = mPref.getStringSet(Common.KEY_UNIT_FORMAT, Common.DEF_UNIT_FORMAT);
-			int localPrefHideBelow = Common.getPrefInt(mPref, Common.KEY_HIDE_BELOW, Common.DEF_HIDE_BELOW);
-			boolean localPrefShowSuffix = mPref.getBoolean(Common.KEY_SHOW_SUFFIX, Common.DEF_SHOW_SUFFIX);
-			float localPrefFontSize = Common.getPrefFloat(mPref, Common.KEY_FONT_SIZE, Common.DEF_FONT_SIZE);
-			int localPrefPosition = Common.getPrefInt(mPref, Common.KEY_POSITION, Common.DEF_POSITION);
-			int localPrefSuffix = Common.getPrefInt(mPref, Common.KEY_SUFFIX, Common.DEF_SUFFIX);
-			Set<String> localPrefNetworkType = mPref.getStringSet(Common.KEY_NETWORK_TYPE, Common.DEF_NETWORK_TYPE);
-			Set<String> localPrefNetworkSpeed = mPref.getStringSet(Common.KEY_NETWORK_SPEED, Common.DEF_NETWORK_SPEED);
-			int localPrefDisplay = Common.getPrefInt(mPref, Common.KEY_DISPLAY, Common.DEF_DISPLAY);
-			boolean localPrefSwapSpeeds = mPref.getBoolean(Common.KEY_SWAP_SPEEDS, Common.DEF_SWAP_SPEEDS);
-			int localPrefUpdateInterval = Common.getPrefInt(mPref, Common.KEY_UPDATE_INTERVAL,
-					Common.DEF_UPDATE_INTERVAL);
-			boolean localPrefFontColor = mPref.getBoolean(Common.KEY_FONT_COLOR, Common.DEF_FONT_COLOR);
-			int localPrefColor = mPref.getInt(Common.KEY_COLOR, Common.DEF_COLOR);
-			Set<String> localPrefFontStyle = mPref.getStringSet(Common.KEY_FONT_STYLE, Common.DEF_FONT_STYLE);
-			boolean localEnableLogging = mPref.getBoolean(Common.KEY_ENABLE_LOG, Common.DEF_ENABLE_LOG);
-			int localSpeedWay = Common.getPrefInt(mPref, Common.KEY_GET_SPEED_WAY, Common.DEF_SPEED_WAY);
-			int localMinWidth = Common.getPrefInt(mPref, Common.KEY_MIN_WIDTH, Common.DEF_MIN_WIDTH);
+			int localPrefForceUnit = preferenceUtils.getInt(getContext(), Common.KEY_FORCE_UNIT, Common.DEF_FORCE_UNIT);
+			int localPrefMinUnit = preferenceUtils.getInt(getContext(), Common.KEY_MIN_UNIT, Common.DEF_MIN_UNIT);
+			int localPrefUnitMode = preferenceUtils.getInt(getContext(), Common.KEY_UNIT_MODE, Common.DEF_UNIT_MODE);
+			Set<String> localPrefUnitFormat = preferenceUtils.getStringSet(getContext(), Common.KEY_UNIT_FORMAT, Common.DEF_UNIT_FORMAT);
+			int localPrefHideBelow = preferenceUtils.getInt(getContext(), Common.KEY_HIDE_BELOW, Common.DEF_HIDE_BELOW);
+			boolean localPrefShowSuffix = preferenceUtils.getBoolean(getContext(), Common.KEY_SHOW_SUFFIX, Common.DEF_SHOW_SUFFIX);
+			float localPrefFontSize = preferenceUtils.getFloat(getContext(), Common.KEY_FONT_SIZE, Common.DEF_FONT_SIZE);
+			int localPrefPosition = preferenceUtils.getInt(getContext(), Common.KEY_POSITION, Common.DEF_POSITION);
+			int localPrefSuffix = preferenceUtils.getInt(getContext(), Common.KEY_SUFFIX, Common.DEF_SUFFIX);
+			Set<String> localPrefNetworkType = preferenceUtils.getStringSet(getContext(), Common.KEY_NETWORK_TYPE, Common.DEF_NETWORK_TYPE);
+			Set<String> localPrefNetworkSpeed = preferenceUtils.getStringSet(getContext(), Common.KEY_NETWORK_SPEED, Common.DEF_NETWORK_SPEED);
+			int localPrefDisplay = preferenceUtils.getInt(getContext(), Common.KEY_DISPLAY, Common.DEF_DISPLAY);
+			boolean localPrefSwapSpeeds = preferenceUtils.getBoolean(getContext(), Common.KEY_SWAP_SPEEDS, Common.DEF_SWAP_SPEEDS);
+			int localPrefUpdateInterval = preferenceUtils.getInt(getContext(), Common.KEY_UPDATE_INTERVAL, Common.DEF_UPDATE_INTERVAL);
+			boolean localPrefFontColor = preferenceUtils.getBoolean(getContext(), Common.KEY_FONT_COLOR, Common.DEF_FONT_COLOR);
+			int localPrefColor = preferenceUtils.getInt(getContext(), Common.KEY_COLOR, Common.DEF_COLOR);
+			Set<String> localPrefFontStyle = preferenceUtils.getStringSet(getContext(), Common.KEY_FONT_STYLE, Common.DEF_FONT_STYLE);
+			boolean localEnableLogging = preferenceUtils.getBoolean(getContext(), Common.KEY_ENABLE_LOG, Common.DEF_ENABLE_LOG);
+			int localSpeedWay = preferenceUtils.getInt(getContext(), Common.KEY_GET_SPEED_WAY, Common.DEF_SPEED_WAY);
+			int localMinWidth = preferenceUtils.getInt(getContext(), Common.KEY_MIN_WIDTH, Common.DEF_MIN_WIDTH);
 
-			// only when all are fetched, set them to fields
+//			only when all are fetched, set them to fields
 			prefForceUnit = localPrefForceUnit;
 			prefMinUnit = localPrefMinUnit;
 			prefUnitMode = localPrefUnitMode;

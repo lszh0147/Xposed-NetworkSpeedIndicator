@@ -30,6 +30,17 @@ public class PreferenceUtils {
 		return preferenceUtils;
 	}
 
+	public boolean isReady(Context context) {
+		Cursor cursor = context.getContentResolver().query(PreferenceProvider.RESOLVED_URL, null,
+				null, null, null);
+		if (cursor != null) {
+			cursor.close();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void putString(Context context, String key, String value) {
 		if (key == null) return;
 		ContentResolver contentResolver = context.getContentResolver();

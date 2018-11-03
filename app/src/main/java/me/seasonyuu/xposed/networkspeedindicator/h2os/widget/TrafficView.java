@@ -257,6 +257,10 @@ public final class TrafficView extends TextView {
 		}
 	};
 
+	private boolean isReady() {
+		return bootCompleted || PreferenceUtils.get().isReady(getContext());
+	}
+
 	@Override
 	protected final void onAttachedToWindow() {
 		try {
@@ -525,7 +529,7 @@ public final class TrafficView extends TextView {
 	};
 
 	private final void updateViewVisibility() {
-		if (bootCompleted && networkState && prefNetworkType.contains(networkType)) {
+		if (isReady() && networkState && prefNetworkType.contains(networkType)) {
 			if (mAttached) {
 				updateTraffic();
 			}

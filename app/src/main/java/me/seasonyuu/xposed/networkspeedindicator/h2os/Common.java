@@ -96,8 +96,7 @@ public final class Common {
 
 	public static final int getPrefInt(final SharedPreferences pref, final String key, final int def_value) {
 		try {
-			String value = pref.getString(key, String.valueOf(def_value));
-			return Integer.parseInt(value);
+			return pref.getInt(key, def_value);
 		} catch (Exception e) {
 			Log.w(TAG, "Key: ", key, ". Def: ", def_value, ". Exception ignored: ", e);
 		}
@@ -106,8 +105,7 @@ public final class Common {
 
 	public static final float getPrefFloat(final SharedPreferences pref, final String key, final float def_value) {
 		try {
-			String value = pref.getString(key, String.valueOf(def_value));
-			return Float.parseFloat(value);
+			return pref.getFloat(key, def_value);
 		} catch (Exception e) {
 			Log.w(TAG, "Key: ", key, ". Def: ", def_value, ". Exception ignored: ", e);
 		}

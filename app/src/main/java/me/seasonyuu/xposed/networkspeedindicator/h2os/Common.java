@@ -96,16 +96,22 @@ public final class Common {
 
 	public static final int getPrefInt(final SharedPreferences pref, final String key, final int def_value) {
 		try {
-			return pref.getInt(key, def_value);
+			String value = pref.getString(key, String.valueOf(def_value));
+			return Integer.parseInt(value);
 		} catch (Exception e) {
 			Log.w(TAG, "Key: ", key, ". Def: ", def_value, ". Exception ignored: ", e);
 		}
 		return def_value;
 	}
 
+	public static final int getRealInt(final SharedPreferences pref, final String key, final int defValue) {
+		return pref.getInt(key, defValue);
+	}
+
 	public static final float getPrefFloat(final SharedPreferences pref, final String key, final float def_value) {
 		try {
-			return pref.getFloat(key, def_value);
+			String value = pref.getString(key, String.valueOf(def_value));
+			return Float.parseFloat(value);
 		} catch (Exception e) {
 			Log.w(TAG, "Key: ", key, ". Def: ", def_value, ". Exception ignored: ", e);
 		}

@@ -24,6 +24,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
+import android.preference.PreferenceManager;
 
 import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.preference.PreferenceUtils;
@@ -343,7 +344,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 					break;
 				}
 				case Common.KEY_COLOR: {
-					int value = Common.getPrefInt(prefs, key, Common.DEF_COLOR);
+					int value = Common.getRealInt(prefs, key, Common.DEF_COLOR);
 					mPreferenceUtils.putInt(this, key, value);
 					intent.putExtra(key, value);
 					break;
@@ -365,7 +366,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 					break;
 				}
 				case Common.KEY_GET_SPEED_WAY: {
-					int value = Common.getPrefInt(prefs, key, Common.DEF_SPEED_WAY);
+					int value = Common.getRealInt(prefs, key, Common.DEF_SPEED_WAY);
 					mPreferenceUtils.putInt(this, key, value);
 					intent.putExtra(key, value);
 					break;

@@ -304,9 +304,12 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 					intent.putExtra(key, value);
 					break;
 				}
-				case Common.KEY_FONT_SIZE:
-					intent.putExtra(key, Common.getPrefFloat(prefs, key, Common.DEF_FONT_SIZE));
+				case Common.KEY_FONT_SIZE: {
+					float value = Common.getPrefFloat(prefs, key, Common.DEF_FONT_SIZE);
+					mPreferenceUtils.putFloat(this, key, value);
+					intent.putExtra(key, value);
 					break;
+				}
 				case Common.KEY_POSITION: {
 					int value = Common.getPrefInt(prefs, key, Common.DEF_POSITION);
 					mPreferenceUtils.putInt(this, key, value);

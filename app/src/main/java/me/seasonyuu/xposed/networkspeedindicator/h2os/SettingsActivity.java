@@ -369,7 +369,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 					break;
 				}
 				case Common.KEY_GET_SPEED_WAY: {
-					int value = Common.getRealInt(prefs, key, Common.DEF_SPEED_WAY);
+					int value = Common.getPrefInt(prefs, key, Common.DEF_SPEED_WAY);
 					mPreferenceUtils.putInt(this, key, value);
 					intent.putExtra(key, value);
 					break;

@@ -1,7 +1,11 @@
 apply plugin: 'com.android.application'
 
 String git(String args) {
-	return "git $args".execute([], project.rootDir).text.trim()
+	Properties properties = new Properties()
+	properties.load(project.rootProject.file("local.properties").newDataInputStream())
+	def gitPath = properties.containsKey("git_path")?properties.getProperty("git_path"):""
+
+	return "${gitPath}git $args".execute([], project.rootDir).text.trim()
 }
 
 def gitHash = git('rev-parse --short HEAD')

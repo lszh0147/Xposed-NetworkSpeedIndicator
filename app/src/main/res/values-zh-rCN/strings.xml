@@ -109,7 +109,7 @@
 	<string name="pref_min_unit_summary">当网速小于最小单位时，显示为0</string>
 	<string name="others">其他</string>
 	<string name="pref_get_speed_way">网速获取方式</string>
-	<string name="speed_way_default">默认方式</string>
+	<string name="speed_way_old">旧方式</string>
 	<string name="speed_way_gravity_box">重力工具箱方式</string>
     <string name="unit_pixel">单位：px</string>
 	<string name="min_width_summary">设定最小宽度可能修复某些 ROM 上可能出现的宽度计算问题</string>

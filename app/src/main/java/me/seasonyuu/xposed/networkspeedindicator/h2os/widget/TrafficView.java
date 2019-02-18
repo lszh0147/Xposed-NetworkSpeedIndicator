@@ -21,10 +21,8 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.Set;
 
-import de.robv.android.xposed.XSharedPreferences;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.Common;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.TrafficStats;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.Utils;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.preference.PreferenceUtils;
 
@@ -113,7 +111,7 @@ public final class TrafficView extends TextView {
 	}
 
 	public void setAlpha(float alpha) {
-		if(!prefPreventFontAlphaChanging)
+		if (!prefPreventFontAlphaChanging)
 			super.setAlpha(alpha);
 	}
 
@@ -218,7 +216,7 @@ public final class TrafficView extends TextView {
 			try {
 				// changing values must be fetched together and only once
 				long lastUpdateTimeNew = SystemClock.elapsedRealtime();
-				int way = prefSpeedWay == 0 ? TrafficStats.DEFAULT_WAY : TrafficStats.GRAVITY_BOX_WAY;
+				int way = prefSpeedWay == 0 ? TrafficStats.GRAVITY_BOX_WAY : TrafficStats.OLD_WAY;
 				long[] totalBytes = TrafficStats.getTotalBytes(way);
 				long totalTxBytesNew = totalBytes[1];
 				long totalRxBytesNew = totalBytes[0];
@@ -327,7 +325,7 @@ public final class TrafficView extends TextView {
 		if (justLaunched) {
 			// get the values for the first time
 			lastUpdateTime = SystemClock.elapsedRealtime();
-			int way = prefSpeedWay == 0 ? TrafficStats.DEFAULT_WAY : TrafficStats.GRAVITY_BOX_WAY;
+			int way = prefSpeedWay == 0 ? TrafficStats.GRAVITY_BOX_WAY : TrafficStats.OLD_WAY;
 			long[] totalBytes = TrafficStats.getTotalBytes(way);
 			totalTxBytes = totalBytes[1];
 			totalRxBytes = totalBytes[0];

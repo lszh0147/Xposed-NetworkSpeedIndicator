@@ -18,7 +18,7 @@ public class TrafficStats {
 	private static final String TAG = TrafficStats.class.getSimpleName();
 
 	public static final int GRAVITY_BOX_WAY = 1;
-	public static final int DEFAULT_WAY = 0;
+	public static final int OLD_WAY = 0;
 
 	public static final long[] getTotalBytes(final int way) {
 		if (way == GRAVITY_BOX_WAY) {

@@ -107,10 +107,10 @@
 	<string name="others">Others</string>
 	<string name="pref_get_speed_way">Way of getting network speed</string>
 	<string-array name="speed_way_entries">
-		<item>@string/speed_way_default</item>
 		<item>@string/speed_way_gravity_box</item>
+		<item>@string/speed_way_old</item>
 	</string-array>
-	<string name="speed_way_default">Default way</string>
+	<string name="speed_way_old">Old way</string>
 	<string name="speed_way_gravity_box">GravityBox way</string>
     <string name="min_width">Minimum width</string>
 	<string name="min_width_summary">Set a minimum width for TextView would fix some measure bugs</string>

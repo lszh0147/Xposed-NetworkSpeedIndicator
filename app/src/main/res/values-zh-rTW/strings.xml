@@ -103,7 +103,7 @@
 	<string name="pref_min_unit_summary">當網路速度小於最小單位時，顯示為0</string>
 	<string name="others">其他</string>
 	<string name="pref_get_speed_way">網路速度獲取模式</string>
-	<string name="speed_way_default">預設模式</string>
+	<string name="speed_way_old">舊模式</string>
 	<string name="speed_way_gravity_box">GravityBox模式</string>
     <string name="min_width">最小寬度</string>
     <string name="min_width_summary">設定最小寬度可能修復某些 ROM 上的寬度計算問題</string>

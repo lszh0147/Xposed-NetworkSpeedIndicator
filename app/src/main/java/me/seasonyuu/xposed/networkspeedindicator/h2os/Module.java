@@ -7,35 +7,23 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import de.robv.android.xposed.IXposedHookInitPackageResources;
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.*;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.CommonPositionCallback;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback1p2;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback1p4;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback2p5;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallbackMiui8;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallbackOreo;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.TrafficView;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public final class Module implements IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
@@ -64,33 +52,31 @@ public final class Module implements IXposedHookLoadPackage, IXposedHookInitPack
 					lpparam.classLoader);
 
 			// we hook this method to follow alpha changes in kitkat
-			if (Build.VERSION.SDK_INT < 26) {
-				Method setAlpha = XposedHelpers.findMethodBestMatch(cClock, "setAlpha", Float.class);
-				XposedBridge.hookMethod(setAlpha, new XC_MethodHook() {
-					@SuppressLint("NewApi")
-					@Override
-					protected final void afterHookedMethod(final MethodHookParam param) throws Throwable {
-						try {
-							if (param.thisObject != getClock())
-								return;
+            Method setAlpha = XposedHelpers.findMethodBestMatch(cClock, "setAlpha", Float.class);
+            XposedBridge.hookMethod(setAlpha, new XC_MethodHook() {
+                @SuppressLint("NewApi")
+                @Override
+                protected final void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                    try {
+                        if (param.thisObject != getClock())
+                            return;
 
-							float targetAlpha = 1;
-							if (trafficView != null) {
-								if (statusIcons != null) {
-									targetAlpha = statusIcons.getAlpha();
-								} else if (clock != null) {
-									targetAlpha = clock.getAlpha();
-								}
-								if (trafficView.getAlpha() != targetAlpha)
-									trafficView.setAlpha(targetAlpha);
-							}
-						} catch (Exception e) {
-							Log.e(TAG, "afterHookedMethod (setAlpha) failed: ", e);
-							throw e;
-						}
-					}
-				});
-			}
+                        float targetAlpha = 1;
+                        if (trafficView != null) {
+                            if (statusIcons != null) {
+                                targetAlpha = statusIcons.getAlpha();
+                            } else if (clock != null) {
+                                targetAlpha = clock.getAlpha();
+                            }
+                            if (trafficView.getAlpha() != targetAlpha)
+                                trafficView.setAlpha(targetAlpha);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "afterHookedMethod (setAlpha) failed: ", e);
+                        throw e;
+                    }
+                }
+            });
 
 			if (Build.VERSION.SDK_INT < 26) {
 				XposedHelpers.findAndHookMethod(XposedHelpers.findClass("com.android.systemui.statusbar.phone.PhoneStatusBar",

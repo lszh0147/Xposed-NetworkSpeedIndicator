@@ -116,5 +116,9 @@
 	<string name="min_width">最小宽度</string>
     <string name="min_width_dialog_message">默认最小宽度为 0px，此时不会进行任何改动</string>
 	<string name="min_width_px_summary">最小宽度为 %s px</string>
+    <string name="status_bar_icon_mode">状态栏图标模式</string>
+	<string name="light_status_bar">亮色状态栏</string>
+	<string name="low_profile">Low Profile</string>
+	<string name="prevent_font_alpha_changing">阻止文本透明度变化</string>
 
 </resources>

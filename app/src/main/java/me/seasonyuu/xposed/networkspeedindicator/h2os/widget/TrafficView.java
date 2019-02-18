@@ -74,6 +74,7 @@ public final class TrafficView extends TextView {
 	private Set<String> prefNetworkType = Common.DEF_NETWORK_TYPE;
 	private Set<String> prefNetworkSpeed = Common.DEF_NETWORK_SPEED;
 	private Set<String> prefFontStyle = Common.DEF_FONT_STYLE;
+	private boolean prefPreventFontAlphaChanging = Common.DEF_PREVENT_FONT_ALPHA_CHANGING;
 
 	public TrafficView(final Context context) {
 		super(context, null, 0);
@@ -109,6 +110,11 @@ public final class TrafficView extends TextView {
 		} else {
 			setTextColor(iconTint);
 		}
+	}
+
+	public void setAlpha(float alpha) {
+		if(!prefPreventFontAlphaChanging)
+			super.setAlpha(alpha);
 	}
 
 	private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -190,6 +196,10 @@ public final class TrafficView extends TextView {
 					}
 					if (intent.hasExtra(Common.KEY_ENABLE_LOG)) {
 						Log.enableLogging = intent.getBooleanExtra(Common.KEY_ENABLE_LOG, Common.DEF_ENABLE_LOG);
+					}
+					if (intent.hasExtra(Common.KEY_PREVENT_FONT_ALPHA_CHANGING)) {
+						prefPreventFontAlphaChanging = intent.getBooleanExtra(Common.KEY_PREVENT_FONT_ALPHA_CHANGING,
+								Common.DEF_PREVENT_FONT_ALPHA_CHANGING);
 					}
 
 					updateViewVisibility();

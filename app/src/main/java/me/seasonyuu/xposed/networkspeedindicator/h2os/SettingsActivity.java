@@ -358,6 +358,12 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 					intent.putExtra(key, value);
 					break;
 				}
+				case Common.KEY_PREVENT_FONT_ALPHA_CHANGING: {
+					boolean value = prefs.getBoolean(key, Common.DEF_PREVENT_FONT_ALPHA_CHANGING);
+					mPreferenceUtils.putBoolean(this, key, value);
+					intent.putExtra(key, value);
+					break;
+				}
 				case Common.KEY_NETWORK_TYPE:
 				case Common.KEY_NETWORK_SPEED:
 				case Common.KEY_UNIT_FORMAT:
@@ -475,6 +481,14 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 				|| key.equals(Common.KEY_ENABLE_LOG)) {
 			Log.enableLogging = prefs.getBoolean(Common.KEY_ENABLE_LOG, Common.DEF_ENABLE_LOG);
 		}
+
+		findPreference("status_bar_icon_mode").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				startActivity(new Intent(SettingsActivity.this, StatusBarIconModeActivity.class));
+				return true;
+			}
+		});
 	}
 
 	private final void getUnitSettings(final SharedPreferences prefs) {

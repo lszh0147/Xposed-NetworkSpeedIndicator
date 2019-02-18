@@ -118,4 +118,10 @@
 	<string name="min_width_dialog_message">default minimun width is 0px, and it wouldn\'t do anything on the view</string>
 	<string name="min_width_px_summary">Minimun width is %s px</string>
 
+	<!-- StatusBar mode activity -->
+	<string name="status_bar_icon_mode">Status Bar Icon Mode</string>
+    <string name="light_status_bar">Light Status Bar</string>
+    <string name="low_profile">Low Profile</string>
+	<string name="prevent_font_alpha_changing">Prevent font alpha chanaging</string>
+
 </resources>

@@ -110,5 +110,9 @@
     <string name="unit_pixel">單位：px</string>
     <string name="min_width_dialog_message">預設最小寬度為 0px，此時不會進行任何改動</string>
 	<string name="min_width_px_summary">最小寬度為 %s px</string>
+    <string name="status_bar_icon_mode">Status Bar Icon Mode</string>
+	<string name="light_status_bar">Light Status Bar</string>
+	<string name="low_profile">Low Profile</string>
+	<string name="prevent_font_alpha_changing">阻止文本透明度變化</string>
 
 </resources>

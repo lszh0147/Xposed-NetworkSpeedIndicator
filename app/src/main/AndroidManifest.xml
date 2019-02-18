@@ -44,6 +44,8 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
+		<activity android:name=".StatusBarIconModeActivity"
+            android:label="@string/status_bar_icon_mode"/>
 		<provider
 			android:name=".preference.PreferenceProvider"
 			android:authorities="me.seasonyuu.xposed.networkspeedindicator.h2os"

@@ -7,13 +7,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import de.robv.android.xposed.*;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
-import de.robv.android.xposed.callbacks.XC_InitPackageResources;
-import de.robv.android.xposed.callbacks.XC_LayoutInflated;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
-import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +18,22 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class Module implements IXposedHookLoadPackage, IXposedHookInitPackageResources {
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.logger.Log;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.CommonPositionCallback;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback1p2;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback1p4;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallback2p5;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallbackMiui8;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.PositionCallbackOreo;
+import me.seasonyuu.xposed.networkspeedindicator.h2os.widget.TrafficView;
+
+public final class Module implements IXposedHookLoadPackage {
 
 	private static final String TAG = Module.class.getSimpleName();
 
@@ -325,31 +333,31 @@ public final class Module implements IXposedHookLoadPackage, IXposedHookInitPack
 		mLayouts = Collections.unmodifiableMap(tmpMap);
 	}
 
-	@Override
-	public final void handleInitPackageResources(final XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-		try {
-			if (!resparam.packageName.equals(PKG_NAME_SYSTEM_UI)) {
-				return;
-			}
-			XResources res = resparam.res;
-
-			final Entry<String, String> layoutInfo = findLayoutInfo(res);
-			if (layoutInfo == null) {
-				return;
-			}
-
-			res.hookLayout(PKG_NAME_SYSTEM_UI, "layout", layoutInfo.getKey(), new XC_LayoutInflated() {
-
-				@Override
-				public final void handleLayoutInflated(final LayoutInflatedParam liparam) throws Throwable {
-
-				}
-			});
-		} catch (Exception e) {
-			Log.e(TAG, "handleInitPackageResources failed: ", e);
-			throw e;
-		}
-	}
+//	@Override
+//	public final void handleInitPackageResources(final XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+//		try {
+//			if (!resparam.packageName.equals(PKG_NAME_SYSTEM_UI)) {
+//				return;
+//			}
+//			XResources res = resparam.res;
+//
+//			final Entry<String, String> layoutInfo = findLayoutInfo(res);
+//			if (layoutInfo == null) {
+//				return;
+//			}
+//
+//			res.hookLayout(PKG_NAME_SYSTEM_UI, "layout", layoutInfo.getKey(), new XC_LayoutInflated() {
+//
+//				@Override
+//				public final void handleLayoutInflated(final LayoutInflatedParam liparam) throws Throwable {
+//
+//				}
+//			});
+//		} catch (Exception e) {
+//			Log.e(TAG, "handleInitPackageResources failed: ", e);
+//			throw e;
+//		}
+//	}
 
 	private static final Entry<String, String> findLayoutInfo(final XResources res) {
 		Iterator<Entry<String, String>> iterator = mLayouts.entrySet().iterator();

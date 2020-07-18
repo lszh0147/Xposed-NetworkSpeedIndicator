@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="app_name">一加状态栏网速</string>
+	<string name="app_name">显示网速</string>
 	<string name="app_description">在状态栏中显示当前流量速度</string>
 	<string name="pref_category_ind_settings">显示设置</string>
 	<string name="pref_category_ind_appearance">外观设置</string>

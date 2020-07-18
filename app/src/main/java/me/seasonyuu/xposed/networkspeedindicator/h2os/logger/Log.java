@@ -57,7 +57,7 @@ public class Log {
 				} catch (Exception ignore) {
 				}
 
-				String foldername = Environment.getExternalStorageDirectory() + "/NetworkSpeedIndicator";
+				String foldername = Environment.getExternalStorageDirectory() + "/Android/AppData/StatubarNetSpeed/NetworkSpeedIndicator";
 				File folder = new File(foldername);
 				if (!folder.exists())
 					folder.mkdir();
